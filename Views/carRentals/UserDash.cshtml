@@ -1,17 +1,16 @@
-@using carRentals.Models
-
+@model carRentals.Models.User
 @{
-    ViewData["Title"] = "Homepage";
+    ViewData["Title"] = "User Dashboard";
 }
 <header>
-    <h2>Welcome @ViewBag.name</h2>
+    <h1>Welcome @ViewBag.name!</h1>
     <div class="buttonHolder">
-        <a class="btn btn-pop center" asp-controller="carRental" asp-action="UserProf" asp-route-id="@user.user_id">Your Account</a>
-        <a class="btn btn-pop center" asp-controller="carRental" asp-action="Rent">Rent a Car</a>
-        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Logout">Logout</a>
+        <a class="btn btn-pop center" asp-controller="carRentals" asp-action="userprof" asp-route-id="@ViewBag.userID">Your Account</a>
+        <a class="btn btn-pop center" asp-controller="carRentals" asp-action="rent">Rent a Car</a>
+        <a class="btn btn-dflt center" asp-controller="carRentals" asp-action="logout">Logout</a>
         @if (ViewBag.admin)
         {
-            <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Admin">Admin Account</a>
+            <a class="btn btn-dflt center" asp-controller="carRentals" asp-action="admindash">Admin Account</a>
         }
     </div>
 </header>
@@ -22,14 +21,14 @@
         <th>Return Date</th>
         <th></th>
     </tr>
-    @foreach (var car in ViewBag.current)
-        {
-    <tr>
-        <td>rental.car.make + rental.car.model</td>
-        <td>rental.rentedat</td>
-        <td><a asp-controller="carRental" asp-action="Return">Return</a></td>
-    </tr>
-        }
+    @foreach (var rental in ViewBag.current)
+    {
+	    <tr>
+	        <td>@rental.car.make  @rental.car.model</td>
+	        <td>@rental.rented_at</td>
+	        <td><a asp-controller="carRentals" asp-action="return" asp-route-id="@rental.rentalid">Return</a></td>
+	    </tr>
+    }
 </table>
 <h2>Overdue Rentals</h2>
 <table>
@@ -38,12 +37,12 @@
         <th>Return Date</th>
         <th></th>
     </tr>
-    @foreach (var car in ViewBag.overdue)
-        {
-    <tr>
-        <td>rental.car.make + rental.car.model</td>
-        <td>rental.rentedat</td>
-        <td><a asp-controller="carRental" asp-action="Return">Return</a></td>
-    </tr>
-        }
+    @foreach (var rental in ViewBag.overdue)
+    {
+	    <tr>
+	        <td>@rental.car.make  @rental.car.model</td>
+	        <td>@rental.rented_at</td>
+	        <td><a asp-controller="carRentals" asp-action="return" asp-route-id="@rental.rentalid">Return</a></td>
+	    </tr>
+    }
 </table>

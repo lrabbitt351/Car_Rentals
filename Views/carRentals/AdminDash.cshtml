@@ -1,13 +1,13 @@
-@using carRentals.Models
+@model carRentals.Models.User
 
 @{
     ViewData["Title"] = "Welcome Admin";
 }
 <header>
     <div class="buttonHolder">
-        <a class="btn btn-pop center" asp-controller="carRental" asp-action="Add">Add New Car to Lot</a>
-        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Success">Go Home</a>
-        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Logout">Logout</a>
+        <a class="btn btn-pop center" asp-controller="carRentals" asp-action="newcar">Add New Car to Lot</a>
+        <a class="btn btn-dflt center" asp-controller="carRentals" asp-action="userdash">Go Home</a>
+        <a class="btn btn-dflt center" asp-controller="carRentals" asp-action="logout">Logout</a>
     </div>
 </header>
 <h2>Cars on Lot</h2>
@@ -17,14 +17,14 @@
         <th>Model</th>
         <th>Inventory</th>
     </tr>
-    @foreach (var car in ViewBag.onlot)
-        {
-    <tr>
-        <td>rental.car.make</td>
-        <td>rental.car.model</td>
-        <td>count<a asp-controller="carRental" asp-action="Plus">{+}</a><a asp-controller="carRental" asp-action="Minus">{-}</a></td>
-    </tr>
-        }
+    @foreach (var car in ViewBag.onLot)
+    {
+	    <tr>
+	        <td>@car.make</td>
+	        <td>@car.model</td>
+	        <td>@car.inventory <a asp-controller="carRentals" asp-action="plus" asp-route-id="@car.carid">+</a> / <a asp-controller="carRentals" asp-action="minus" asp-route-id="@car.carid">-</a></td>
+	    </tr>
+    }
 </table>
 <h2>Currently Rented</h2>
 <table>
@@ -34,13 +34,13 @@
         <th>Model</th>
         <th>Date Due</th>
     </tr>
-    @foreach (var car in ViewBag.currentlyrented)
-        {
-    <tr>
-        <td><a asp-controller="carRental" asp-action="UserProf" asp-route-id="@user.user_id">rental.user.firstname</a></td>
-        <td>rental.car.make</td>
-        <td>rental.car.model</td>
-        <td>rental.car.returndate</td>
-    </tr>
-        }
+    @foreach (var rental in ViewBag.rented)
+    {
+	    <tr>
+	        <td><a asp-controller="carRentals" asp-action="userprof" asp-route-id="@rental.userid">@rental.user.first_name</a></td>
+	        <td>@rental.car.make</td>
+	        <td>@rental.car.model</td>
+	        <td>@rental.return_at</td>
+	    </tr>
+    }
 </table>

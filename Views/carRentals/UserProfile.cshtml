@@ -1,4 +1,4 @@
-@using carRentals.Models
+@model carRentals.Models.User
 
 @{
     ViewData["Title"] = "User Profile";
@@ -6,9 +6,20 @@
 <header>
     <h1>@ViewBag.name&#39;s Profile Page</h1>
     <div class="buttonHolder">
-        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Success">Go Home</a>
-        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Logout">Logout</a>
+        <a class="btn btn-dflt center" asp-controller="carRentals" asp-action="userdash">Go Home</a>
+        <a class="btn btn-dflt center" asp-controller="carRentals" asp-action="logout">Logout</a>
     </div>
+    @if (ViewBag.curradmin)
+    {
+        if (ViewBag.useradmin)
+        {
+            <a asp-controller="carRentals" asp-action="makeadmin" asp-route-id="@ViewBag.userID">Admin</a>
+        }
+        else
+        {
+            <a asp-controller="carRentals" asp-action="makeadmin" asp-route-id="@ViewBag.userID">Not Admin</a>
+        }
+    }
 </header>
 <h2>Rental Records</h2>
 <table>
@@ -18,11 +29,11 @@
         <th>Return Date</th>
     </tr>
     <tr>
-        @foreach (var car in ViewBag.rentals)
+        @foreach (var rental in ViewBag.rentals)
         {
-            <td>rental.car.make + rental.car.model</td>
-            <td>rental.rentedat</td>
-            <td>rental.returnat</td>
+            <td>@rental.car.make + @rental.car.model</td>
+            <td>@rental.rented_at</td>
+            <td>@rental.return_at</td>
         }
     </tr>
 </table>

@@ -1,4 +1,4 @@
-@using carRentals.Models
+@using System
 @model carRentals.Models.RentViewModel
 @{
     ViewData["Title"] = "Rent a New Car";
@@ -6,13 +6,20 @@
 <header>
     <h1 id="underline">Rent A Car</h1>
     <div class="buttonHolder">
-        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Success">Go Home</a>
-        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Logout">Logout</a>
+        <a class="btn btn-dflt center" asp-controller="carRentals" asp-action="userdash">Go Home</a>
+        <a class="btn btn-dflt center" asp-controller="carRentals" asp-action="logout">Logout</a>
     </div>
 </header>
-<form asp-controller="carRental" asp-action="AddRental" method="post">
+<form asp-controller="carRentals" asp-action="addrental" method="post">
     <h2>Current Rentals</h2>
-    <div class="notif eighty center" asp-validation-summary="All"></div>
+    @if (ViewBag.RentErrors != null)
+    {
+        <div class="notif eighty center" asp-validation-summary="All"></div>
+    }
+    @if (ViewBag.RentErrors2 != null)
+    {
+        <ul class="notif eighty center"><li>@ViewBag.Dateerror</li></ul>
+    }
     <table>
         <tr>
             <th>Make</th>
@@ -20,15 +27,15 @@
             <th>Selection</th>
         </tr>
         @foreach (var car in ViewBag.cars)
-            {
-        <tr>
-            <td>rental.car.make</td>
-            <td>rental.car.model</td>
-            <td><input asp-for="@car.car_id"><input asp-for="selection" type="checkbox"></td>
-        </tr>
-            }
+        {
+            <tr>
+                <td>@car.make</td>
+                <td>@car.model</td>
+                <td><input type="checkbox" name="carid" value="@car.carid"></td>
+            </tr>
+        }
     </table>
-    <input class="push-right" asp-for="rented_at">
-    <input class="push-right" asp-for="return_at">
+    <input class="right" asp-for="return_at">
+    <input class="right" asp-for="rented_at">
     <input class="btn btn-pop" type="submit" name="submit" value="Rent!">
 </form>

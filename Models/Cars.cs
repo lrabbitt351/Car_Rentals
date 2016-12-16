@@ -5,7 +5,7 @@ namespace carRentals.Models
 {
     public class Car : BaseEntity
     {
-        public long car_id { get; set; }
+        public long carid { get; set; }
         public string make { get; set; }
         public string model { get; set; }
         public int inventory { get; set; }

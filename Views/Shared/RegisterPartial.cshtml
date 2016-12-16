@@ -1,6 +1,6 @@
 @model carRentals.Models.RegViewModel
 <h1>Registration</h1>
-<form id="register" class="hundo" asp-controller="carRentals" asp-action="register" method="post" role="form">
+<form id="register" class="hundo" asp-controller="carRentals" asp-action="Register" method="post" role="form">
 	@if (ViewBag.RegErrors != null)
 	{
 		<div class="notif eighty center" asp-validation-summary="All"></div>
