@@ -1,0 +1,23 @@
+@model carRentals.Models.RegViewModel
+<h1>Registration</h1>
+<form id="register" class="hundo" asp-controller="carRentals" asp-action="register" method="post" role="form">
+	@if (ViewBag.RegErrors != null)
+	{
+		<div class="notif eighty center" asp-validation-summary="All"></div>
+	}
+	@if (ViewBag.DupeReg != null)
+	{
+		<ul class="notif eighty center"><li>@ViewBag.DupeReg</li></ul>
+	}
+	<label class="forty" asp-for="first_name"></label>
+	<input id="first" class="sixty" asp-for="first_name">
+	<label class="forty" asp-for="last_name"></label>
+	<input class="sixty" asp-for="last_name">
+	<label class="forty" asp-for="email"></label>
+	<input class="sixty" asp-for="email">
+	<label class="forty" asp-for="password"></label>
+	<input id="password" class="sixty" asp-for="password" onkeyup="checkPword()" onkeydown="checkPword()">
+	<label class="forty" asp-for="confirm"></label>
+	<input id="confirm" class="sixty" asp-for="confirm" onkeyup="checkConf()" onkeydown="checkConf()">
+	<input class="btn btn-pop" type="submit" name="submit" value="Register">
+</form>

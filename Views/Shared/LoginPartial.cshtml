@@ -1,0 +1,17 @@
+@model carRentals.Models.LogViewModel
+<h1>Login</h1>
+<form id="login" class="hundo" asp-controller="carRentals" asp-action="login" method="post" role="form">
+	@if (ViewBag.LogErrors != null)
+	{
+		<div class="notif eighty center" asp-validation-summary="All"></div>
+	}
+	@if (ViewBag.DupeLog != null)
+	{
+		<ul class="notif eighty center"><li>@ViewBag.DupeLog</li></ul>
+	}
+	<label class="forty" asp-for="logemail"></label>
+	<input class="sixty" asp-for="logemail">
+	<label class="forty" asp-for="logpassword"></label>
+	<input class="sixty" asp-for="logpassword">
+	<input class="btn btn-pop" type="submit" name="submit" value="Login">
+</form>
