@@ -1,0 +1,34 @@
+@using carRentals.Models
+@model carRentals.Models.RentViewModel
+@{
+    ViewData["Title"] = "Rent a New Car";
+}
+<header>
+    <h1 id="underline">Rent A Car</h1>
+    <div class="buttonHolder">
+        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Success">Go Home</a>
+        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Logout">Logout</a>
+    </div>
+</header>
+<form asp-controller="carRental" asp-action="AddRental" method="post">
+    <h2>Current Rentals</h2>
+    <div class="notif eighty center" asp-validation-summary="All"></div>
+    <table>
+        <tr>
+            <th>Make</th>
+            <th>Model</th>
+            <th>Selection</th>
+        </tr>
+        @foreach (var car in ViewBag.cars)
+            {
+        <tr>
+            <td>rental.car.make</td>
+            <td>rental.car.model</td>
+            <td><input asp-for="@car.car_id"><input asp-for="selection" type="checkbox"></td>
+        </tr>
+            }
+    </table>
+    <input class="push-right" asp-for="rented_at">
+    <input class="push-right" asp-for="return_at">
+    <input class="btn btn-pop" type="submit" name="submit" value="Rent!">
+</form>

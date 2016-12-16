@@ -1,0 +1,21 @@
+@using carRentals.Models
+@model carRentals.Models.NewCarViewModel
+@{
+    ViewData["Title"] = "Add New Car Rental";
+}
+<header>
+    <h1 id="underline">Create New Entry</h1>
+    <div class="buttonHolder">
+        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Success">Go Home</a>
+        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Logout">Logout</a>
+    </div>
+</header>
+<form asp-controller="carRental" asp-action="AddCar" method="post">
+    <label class="forty" asp-for="make"></label>
+	<input class="sixty" asp-for="make">
+	<label class="forty" asp-for="model"></label>
+	<input class="sixty" asp-for="model">
+    <label class="forty" asp-for="count"></label>
+	<input class="sixty" asp-for="count">
+	<input class="btn btn-pop" type="submit" name="submit" value="Add Car">
+</form>
