@@ -2,9 +2,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace carRentals.Models
 {
-    public class carRentalContext : DbContext
+    public class carRentalsContext : DbContext
     {
-        public carRentalContext(DbContextOptions<carRentalContext> options) : base(options)
+        public carRentalsContext(DbContextOptions<carRentalsContext> options) : base(options)
         { }
         public DbSet<User> Users { get; set; }
         public DbSet<Car> Cars { get; set; }

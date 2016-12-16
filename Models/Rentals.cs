@@ -10,8 +10,8 @@ namespace carRentals.Models
         public DateTime created_at{ get; set; }
 		public DateTime updated_at{ get; set; }
         public long car_id { get; set; }
+        public Car car { get; set; }
         public long user_id { get; set; }
         public User user { get; set; }
-        public Car car { get; set; }
     }
 }

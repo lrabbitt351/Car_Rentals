@@ -1,4 +1,5 @@
 using System;
+using System.Reflection;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
 
@@ -32,15 +33,14 @@ namespace carRentals.Models
     }
     public class RentViewModel : BaseEntity
     {
-        public string now = DateTime.Now.ToString();
         [HiddenInput]
         public long car_id { get; set; }
         [Required(ErrorMessage = "Please select a car.")]
         public string selection { get; set; }
-        [DataType(DataType.Date), DateGreaterThanAttribute("now")]
+        [DataType(DataType.Date), DateGreaterThan("DateTime.Now.ToString()")]
         public DateTime rented_at { get; set; }
 
-        [DataType(DataType.Date)]
+        [DataType(DataType.Date), DateGreaterThan("rented_at")]
         public DateTime return_at { get; set; }
 
     }

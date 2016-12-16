@@ -10,8 +10,8 @@ namespace carRentals.Controllers
 {
     public class carRentalsController : Controller
     {
-        private carRentalContext _context; //create private class to hold our context object
-        public carRentalsController(carRentalContext context) //on controller instantiation...
+        private carRentalsContext _context; //create private class to hold our context object
+        public carRentalsController(carRentalsContext context) //on controller instantiation...
         {
             _context = context; //populate the private context object with a services context object
         }
@@ -54,7 +54,7 @@ namespace carRentals.Controllers
                     _context.Users.Add(NewUser); //add the user to the database
                     _context.SaveChanges(); //save the changes
                     currUser = _context.Users.SingleOrDefault(user => user.email == model.email); //retrieve the user from the database and store them in currUser (do this to get their user id)
-                    return RedirectToAction("Success"); //return to the Success page
+                    return RedirectToAction("UserDash"); //return to the UserDash page
                 }
             }
             ViewBag.RegErrors = true; //set regerrors to true to display the error box
@@ -82,26 +82,11 @@ namespace carRentals.Controllers
                 else //if a user is retrieved and the password is correct...
                 {
                     currUser = checkUser; //set currUser equal to the retrieved user
-                    return RedirectToAction("Success"); //return to the Success page
+                    return RedirectToAction("UserDash"); //return to the UserDash page
                 }
             }
             ViewBag.LogErrors = true; //unhide the errors on the login portion of the page
             return View("Index",model); //return the user to Index
-        }
-        
-        [HttpGet]
-        [Route("success")]
-        public IActionResult Success()
-        {
-            if (currUser == null) //if there is no user information stored in currUser...
-            {
-                return RedirectToAction("Index"); //return the user to Index
-            }
-            if (currUser.admin)
-            {
-                return RedirectToAction("UserDash");
-            }
-            return RedirectToAction("AdminDash");
         }
 
         [HttpGet]
@@ -134,18 +119,18 @@ namespace carRentals.Controllers
             return View("AddQuote"); //return the Addquote page with the quote view model
         }
 
-        [HttpGet]
-        [Route("admindash")]
-        public IActionResult AdminDash()
-        {
-            if (currUser == null) //if there is no user information stored in currUser...
-            {
-                return RedirectToAction("Index"); //return the user to Index
-            }
-            ViewBag.name = currUser.first_name; //set ViewBag.name equal to the first name of the user set in currUser
-            ViewBag.userID = currUser.userid; //set the user id to the user id of the current user
-            return View("AddQuote",new QuoteViewModel()); //return the Addquote page with the quote view model
-        }
+        // [HttpGet]
+        // [Route("admindash")]
+        // public IActionResult AdminDash()
+        // {
+        //     if (currUser == null) //if there is no user information stored in currUser...
+        //     {
+        //         return RedirectToAction("Index"); //return the user to Index
+        //     }
+        //     ViewBag.name = currUser.first_name; //set ViewBag.name equal to the first name of the user set in currUser
+        //     ViewBag.userID = currUser.userid; //set the user id to the user id of the current user
+        //     return View("AddQuote",new QuoteViewModel()); //return the Addquote page with the quote view model
+        // }
 
         [HttpGet]
         [Route("rent")]
@@ -162,29 +147,34 @@ namespace carRentals.Controllers
         
         [HttpPost]
         [Route("addrental")]
-        public IActionResult AddRental(QuoteViewModel model) //receives a NewQuote object as an argument AS LONG AS ALL NAMES OF INPUTS AND MODEL KEYS MATCH!!
+        public IActionResult AddRental(RentViewModel model) //receives a NewQuote object as an argument AS LONG AS ALL NAMES OF INPUTS AND MODEL KEYS MATCH!!
         {
             if (currUser == null) //if there is no user information stored in currUser...
             {
-                return RedirectToAction("Success"); //return the user to Success
+                return RedirectToAction("Index"); //return the user to Success
             }
             if (ModelState.IsValid) //if the data entered in the inputs meets the min requirements as set forth in models...
             {
-                Quote NewQuote = new Quote //create a new quote object based on the quoteviewmodel
+                Rental NewRental = new Rental //create a new quote object based on the quoteviewmodel
                 {
-                    quotetext = model.quotetext,
-                    userid = currUser.userid,
+                    rented_at = model.rented_at,
+                    return_at = model.return_at,
                     created_at = DateTime.Now,
-                    updated_at = DateTime.Now
+                    updated_at = DateTime.Now,
+                    user_id = currUser.user_id,
+                    car_id = model.car_id
                 };
-                _context.Add(NewQuote); //send the NewQuote object (with populated information) to context to add to the DB
+                _context.Add(NewRental); //send the NewQuote object (with populated information) to context to add to the DB
+                Car car = _context.Cars.SingleOrDefault(c => c.car_id == model.car_id);
+                car.inventory -= 1;
+                car.updated_at = DateTime.Now;
                 _context.SaveChanges(); //save the changes to the DB
-                return RedirectToAction("Quotes"); //return to the Quote page
+                return RedirectToAction("UserDash"); //return to the Quote page
             }
-            ViewBag.QuoteErrors = true; //show the quote errors notification box
-            ViewBag.name = currUser.first_name; //set ViewBag.name equal to the first name of the user set in currUser
-            ViewBag.userID = currUser.userid; //send the current user id to the front end in ViewBag
-            return View("AddQuote", model); //return the user to Success
+            ViewBag.RentErrors = true;
+            List<Car> allCars = _context.Cars.Where(c => c.inventory > 0).ToList();
+            ViewBag.cars = allCars;
+            return View("Rent", new RentViewModel());
         }
 
         [HttpGet]
@@ -202,21 +192,25 @@ namespace carRentals.Controllers
             User user = _context.Users
                 .Include(u => u.rentals)
                     .ThenInclude(r => r.car)
-                    .SingleOrDefault(u => u.userid == id);
+                    .SingleOrDefault(u => u.user_id == id);
             ViewBag.name = user.first_name;
             ViewBag.rentals = user.rentals;
             return View("UserProfile");
         }
 
         [HttpGet]
-        [Route("madeadmin/{id}")]
-        public IActionResult MadeAdmin(int id)
+        [Route("makeadmin/{id}")]
+        public IActionResult MakeAdmin(int id)
         {
             if (currUser == null) //if there is no user information stored in currUser...
             {
                 return RedirectToAction("Index"); //return the user to Index
             }
-            var user = _context.Users.SingleOrDefault(u => u.userid == id);
+            if (currUser.user_id != id || currUser.admin)
+            {
+                return RedirectToAction("UserDash");
+            }
+            var user = _context.Users.SingleOrDefault(u => u.user_id == id);
             if (!user.admin)
             {
                 user.admin = true;
@@ -225,6 +219,8 @@ namespace carRentals.Controllers
             {
                 user.admin = false;
             }
+            user.updated_at = DateTime.Now;
+            _context.SaveChanges();
             return RedirectToAction("UserProf", new {id = id});
         }
 
@@ -236,31 +232,31 @@ namespace carRentals.Controllers
             {
                 return RedirectToAction("Index"); //return the user to Index
             }
-            return View("AddQuote",new `ViewModel()); //return the Addquote page with the quote view model
+            return View("AddQuote",new NewCarViewModel()); //return the Addquote page with the quote view model
         }
 
-        [HttpPost]
-        [Route("addcar")]
-        public IActionResult AddCar(UpquoteViewModel model) //receive a Quote object as a parameter based on the information in the input fields
-        {
-            if (currUser == null) //if there is no user information stored in currUser...
-            {
-                return RedirectToAction("Index"); //return the user to Index
-            }
-            if (currUser.userid != model.userid) { //if the user isn't the one who created the quote to update...
-                return RedirectToAction("Quotes"); //return the user to the Quotes page
-            }
-            if (ModelState.IsValid) //if the information entered matches the min reqs in your models...
-            {
-                Quote upQuote =  _context.Quotes.SingleOrDefault(quote => quote.quoteid == model.quoteid); //retrieve the particular quote's information from the DB
-                upQuote.quotetext = model.quotetext; //update the quote information based on the updated quote from the form
-                upQuote.updated_at = DateTime.Now; //change the updated_at information for the quote
-                _context.SaveChanges(); //save the changes in the DB
-                return RedirectToAction("Quotes"); //return the user to the Quotes page
-            }
-            ViewBag.QuoteErrors = true; //unhide the error box on the quotes page
-            return View("Update", model); //return the user to the Update page with the arg of the quote id
-        }
+        // [HttpPost]
+        // [Route("addcar")]
+        // public IActionResult AddCar(UpquoteViewModel model) //receive a Quote object as a parameter based on the information in the input fields
+        // {
+        //     if (currUser == null) //if there is no user information stored in currUser...
+        //     {
+        //         return RedirectToAction("Index"); //return the user to Index
+        //     }
+        //     if (currUser.userid != model.userid) { //if the user isn't the one who created the quote to update...
+        //         return RedirectToAction("Quotes"); //return the user to the Quotes page
+        //     }
+        //     if (ModelState.IsValid) //if the information entered matches the min reqs in your models...
+        //     {
+        //         Quote upQuote =  _context.Quotes.SingleOrDefault(quote => quote.quoteid == model.quoteid); //retrieve the particular quote's information from the DB
+        //         upQuote.quotetext = model.quotetext; //update the quote information based on the updated quote from the form
+        //         upQuote.updated_at = DateTime.Now; //change the updated_at information for the quote
+        //         _context.SaveChanges(); //save the changes in the DB
+        //         return RedirectToAction("Quotes"); //return the user to the Quotes page
+        //     }
+        //     ViewBag.QuoteErrors = true; //unhide the error box on the quotes page
+        //     return View("Update", model); //return the user to the Update page with the arg of the quote id
+        // }
 
         [HttpGet]
         [Route("logout")]
