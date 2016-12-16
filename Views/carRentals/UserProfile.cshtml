@@ -1,0 +1,28 @@
+@using carRentals.Models
+
+@{
+    ViewData["Title"] = "User Profile";
+}
+<header>
+    <h1>@ViewBag.name&#39;s Profile Page</h1>
+    <div class="buttonHolder">
+        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Success">Go Home</a>
+        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Logout">Logout</a>
+    </div>
+</header>
+<h2>Rental Records</h2>
+<table>
+    <tr>
+        <th>Car type</th>
+        <th>Checkout Date</th>
+        <th>Return Date</th>
+    </tr>
+    <tr>
+        @foreach (var car in ViewBag.rentals)
+        {
+            <td>rental.car.make + rental.car.model</td>
+            <td>rental.rentedat</td>
+            <td>rental.returnat</td>
+        }
+    </tr>
+</table>

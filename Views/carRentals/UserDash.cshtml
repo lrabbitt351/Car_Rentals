@@ -1,0 +1,49 @@
+@using carRentals.Models
+
+@{
+    ViewData["Title"] = "Homepage";
+}
+<header>
+    <h2>Welcome @ViewBag.name</h2>
+    <div class="buttonHolder">
+        <a class="btn btn-pop center" asp-controller="carRental" asp-action="UserProf" asp-route-id="@user.user_id">Your Account</a>
+        <a class="btn btn-pop center" asp-controller="carRental" asp-action="Rent">Rent a Car</a>
+        <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Logout">Logout</a>
+        @if (ViewBag.admin)
+        {
+            <a class="btn btn-dflt center" asp-controller="carRental" asp-action="Admin">Admin Account</a>
+        }
+    </div>
+</header>
+<h2>Current Rentals</h2>
+<table>
+    <tr>
+        <th>Car type</th>
+        <th>Return Date</th>
+        <th></th>
+    </tr>
+    @foreach (var car in ViewBag.current)
+        {
+    <tr>
+        <td>rental.car.make + rental.car.model</td>
+        <td>rental.rentedat</td>
+        <td><a asp-controller="carRental" asp-action="Return">Return</a></td>
+    </tr>
+        }
+</table>
+<h2>Overdue Rentals</h2>
+<table>
+    <tr>
+        <th>Car type</th>
+        <th>Return Date</th>
+        <th></th>
+    </tr>
+    @foreach (var car in ViewBag.overdue)
+        {
+    <tr>
+        <td>rental.car.make + rental.car.model</td>
+        <td>rental.rentedat</td>
+        <td><a asp-controller="carRental" asp-action="Return">Return</a></td>
+    </tr>
+        }
+</table>
