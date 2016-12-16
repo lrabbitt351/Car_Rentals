@@ -97,14 +97,42 @@ namespace carRentals.Controllers
             {
                 return RedirectToAction("Index"); //return the user to Index
             }
+            if (currUser.admin)
+            {
+                return RedirectToAction("UserDash");
+            }
+            return RedirectToAction("AdminDash");
+        }
+
+        [HttpGet]
+        [Route("userdash")]
+        public IActionResult UserDash()
+        {
+            if (currUser == null) //if there is no user information stored in currUser...
+            {
+                return RedirectToAction("Index"); //return the user to Index
+            }
             ViewBag.name = currUser.first_name; //set ViewBag.name equal to the first name of the user set in currUser
             ViewBag.userID = currUser.userid; //set the user id to the user id of the current user
             return View("AddQuote",new QuoteViewModel()); //return the Addquote page with the quote view model
         }
 
         [HttpGet]
-        [Route("quotes")]
-        public IActionResult Quotes()
+        [Route("admindash")]
+        public IActionResult AdminDash()
+        {
+            if (currUser == null) //if there is no user information stored in currUser...
+            {
+                return RedirectToAction("Index"); //return the user to Index
+            }
+            ViewBag.name = currUser.first_name; //set ViewBag.name equal to the first name of the user set in currUser
+            ViewBag.userID = currUser.userid; //set the user id to the user id of the current user
+            return View("AddQuote",new QuoteViewModel()); //return the Addquote page with the quote view model
+        }
+
+        [HttpGet]
+        [Route("rent")]
+        public IActionResult Rent()
         {
             if (currUser == null) //if there is no user information stored in currUser...
             {
@@ -125,8 +153,8 @@ namespace carRentals.Controllers
         }
         
         [HttpPost]
-        [Route("addQuote")]
-        public IActionResult addQuote(QuoteViewModel model) //receives a NewQuote object as an argument AS LONG AS ALL NAMES OF INPUTS AND MODEL KEYS MATCH!!
+        [Route("addrental")]
+        public IActionResult AddRental(QuoteViewModel model) //receives a NewQuote object as an argument AS LONG AS ALL NAMES OF INPUTS AND MODEL KEYS MATCH!!
         {
             if (currUser == null) //if there is no user information stored in currUser...
             {
@@ -152,29 +180,56 @@ namespace carRentals.Controllers
         }
 
         [HttpGet]
-        [Route("update/{id}")]
-        public IActionResult update(int id)
+        [Route("userprof/{id}")]
+        public IActionResult UserProf(int id)
         {
             if (currUser == null) //if there is no user information stored in currUser...
             {
                 return RedirectToAction("Index"); //return the user to Index
             }
-            Quote upQuote = _context.Quotes.Include(quote => quote.user).SingleOrDefault(quote => quote.quoteid == id);
-            if (currUser.userid != upQuote.userid) { //if the user isn't the original creator of the quote...
-                return RedirectToAction("Quotes"); //return the user to the quotes page
-            }
-            UpquoteViewModel upquote = new UpquoteViewModel //create a new updated quote object with the quote information
+            var user = _context.Users
+                .Include(u => u.rentals)
+                    .ThenInclude(r => r.car)
+                    .SingleOrDefault(u => u.userid == id);
+            ViewBag.name = user.first_name;
+            ViewBag.rentals = user.rentals;
+            return View("UserProfile");
+        }
+
+        [HttpGet]
+        [Route("madeadmin/{id}")]
+        public IActionResult MadeAdmin(int id)
+        {
+            if (currUser == null) //if there is no user information stored in currUser...
             {
-                quotetext = upQuote.quotetext,
-                userid = currUser.userid,
-                quoteid = id
-            };
-            return View("Update", upquote); //render the update quote page with the created quote object
+                return RedirectToAction("Index"); //return the user to Index
+            }
+            var user = _context.Users.SingleOrDefault(u => u.userid == id);
+            if (!user.admin)
+            {
+                user.admin = true;
+            }
+            else
+            {
+                user.admin = false;
+            }
+            return RedirectToAction("UserProf", new {id = id});
+        }
+
+        [HttpGet]
+        [Route("newcar")]
+        public IActionResult NewCar()
+        {
+            if (currUser == null) //if there is no user information stored in currUser...
+            {
+                return RedirectToAction("Index"); //return the user to Index
+            }
+            return View("AddQuote",new QuoteViewModel()); //return the Addquote page with the quote view model
         }
 
         [HttpPost]
-        [Route("updateQuote")]
-        public IActionResult updateQuote(UpquoteViewModel model) //receive a Quote object as a parameter based on the information in the input fields
+        [Route("addcar")]
+        public IActionResult AddCar(UpquoteViewModel model) //receive a Quote object as a parameter based on the information in the input fields
         {
             if (currUser == null) //if there is no user information stored in currUser...
             {
@@ -193,23 +248,6 @@ namespace carRentals.Controllers
             }
             ViewBag.QuoteErrors = true; //unhide the error box on the quotes page
             return View("Update", model); //return the user to the Update page with the arg of the quote id
-        }
-
-        [HttpGet]
-        [Route("delete/{id}")]
-        public IActionResult delete(int id)
-        {
-            if (currUser == null) //if there is no user information stored in currUser...
-            {
-                return RedirectToAction("Index"); //return the user to Index
-            }
-            Quote delQuote = _context.Quotes.SingleOrDefault(quote => quote.quoteid == id);
-            if (currUser.userid != delQuote.userid) { //if the logged in user isn't the one that created this quote...
-                return RedirectToAction("Quotes"); //return the user to the Quotes page
-            }
-            _context.Quotes.Remove(delQuote); //delete the respective quote from the the DB
-            _context.SaveChanges(); //save the changes in the DB
-            return RedirectToAction("Quotes"); //return the user to the Quotes page
         }
 
         [HttpGet]
