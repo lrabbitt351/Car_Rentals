@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - carRentals</title>
+    <title>@ViewData["Title"] - Car Rentals</title>
     
     <link rel="stylesheet" href=""
             asp-fallback-href="function link() { [native code] }"
@@ -12,13 +12,10 @@
     <link rel="stylesheet" href="~/css/site.css" />
 </head>
 <body>
-    <div class="container body-content">
+    <main class="eighty center">
         @RenderBody()
-    </div>
+    </main>
         
-        
-        <script src="~/js/site.js" asp-append-version="true"></script>
-
     @RenderSection("scripts", required: false)
 </body>
 </html>
