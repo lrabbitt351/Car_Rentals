@@ -13,6 +13,5 @@ namespace carRentals.Models
         public long user_id { get; set; }
         public User user { get; set; }
         public Car car { get; set; }
-
     }
 }
