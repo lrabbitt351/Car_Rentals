@@ -4,12 +4,9 @@ namespace carRentals.Models
 {
 	public class LogViewModel : BaseEntity 
 	{ //creates class to validate the login fields against
-		[Required(ErrorMessage = "Email address cannot be left blank")]
-		[Display(Name = "Email:")]
+		[Display(Name = "Email:"), Required(ErrorMessage = "Email address cannot be left blank")]
 		public string logemail { get; set; }
-		[Required(ErrorMessage = "Password cannot be left blank")]
-		[Display(Name = "Password:")]
-		[DataType(DataType.Password)]
+		[DataType(DataType.Password), Display(Name = "Password:"), Required(ErrorMessage = "Password cannot be left blank")]
 		public string logpassword { get; set; }
 	}
 }

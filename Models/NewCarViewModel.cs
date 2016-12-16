@@ -4,11 +4,11 @@ namespace carRentals.Models
 {
     public class NewCarViewModel : BaseEntity
     {
-        [Required(ErrorMessage = "Make can not be blank")]
-		[Display(Name = "Car Make:")]
+		[Display(Name = "Car Make:"), Required(ErrorMessage = "Make can not be blank")]
         public string make { get; set; }
-        [Required(ErrorMessage = "Model can not be blank")]
-		[Display(Name = "Car Model:")]
+		[Display(Name = "Car Model:"), Required(ErrorMessage = "Model can not be blank")]
         public string model { get; set; }
+		[Display(Name = "Inventory:")]
+        public int inventory { get; set; }
     }
 }

@@ -112,9 +112,26 @@ namespace carRentals.Controllers
             {
                 return RedirectToAction("Index"); //return the user to Index
             }
+            List<Rental> current = new List<Rental>();
+            List<Rental> overdue = new List<Rental>();
+            List<Rental> rentals = _context.Rentals.Include(r => r.car).Where(u => u.user_id == currUser.user_id).ToList();
+            foreach (Rental rental in rentals)
+            {
+                if (rental.return_at < DateTime.Now)
+                {
+                    overdue.Add(rental);
+                }
+                else
+                {
+                    current.Add(rental);
+                }
+            }
             ViewBag.name = currUser.first_name; //set ViewBag.name equal to the first name of the user set in currUser
-            ViewBag.userID = currUser.userid; //set the user id to the user id of the current user
-            return View("AddQuote",new QuoteViewModel()); //return the Addquote page with the quote view model
+            ViewBag.userID = currUser.user_id; //set the user id to the user id of the current user
+            ViewBag.admin = currUser.admin;
+            ViewBag.current = current;
+            ViewBag.overdue = overdue;
+            return View("AddQuote"); //return the Addquote page with the quote view model
         }
 
         [HttpGet]
@@ -138,18 +155,9 @@ namespace carRentals.Controllers
             {
                 return RedirectToAction("Index"); //return the user to Index
             }
-            List<Quote> allQuotes = _context.Quotes.Include(quote => quote.user).ToList(); //generate a list of Quote objects and store all quotes in the DB in it
-            if (allQuotes.Count > 0) //if there are quotes in the DB...
-            {
-                ViewBag.quoteShow = true; //allow the quoteContainer to be viewed and change h1
-                ViewBag.quotes = allQuotes; //send the quotes to the Quotes page in ViewBag
-            }
-            else //if there aren't any quotes in the DB yet...
-            {
-                ViewBag.quoteShow = false; //don't allow the quoteContainer to be viewed and set default h1
-            }
-            ViewBag.UserId = currUser.userid; //send the user id to the front end
-            return View("Quotes");
+            List<Car> allCars = _context.Cars.Where(c => c.inventory > 0).ToList();
+            ViewBag.cars = allCars;
+            return View("Rent", new RentViewModel());
         }
         
         [HttpPost]
@@ -187,7 +195,11 @@ namespace carRentals.Controllers
             {
                 return RedirectToAction("Index"); //return the user to Index
             }
-            var user = _context.Users
+            if (currUser.user_id != id || currUser.admin)
+            {
+                return RedirectToAction("UserDash");
+            }
+            User user = _context.Users
                 .Include(u => u.rentals)
                     .ThenInclude(r => r.car)
                     .SingleOrDefault(u => u.userid == id);
@@ -224,7 +236,7 @@ namespace carRentals.Controllers
             {
                 return RedirectToAction("Index"); //return the user to Index
             }
-            return View("AddQuote",new QuoteViewModel()); //return the Addquote page with the quote view model
+            return View("AddQuote",new `ViewModel()); //return the Addquote page with the quote view model
         }
 
         [HttpPost]
