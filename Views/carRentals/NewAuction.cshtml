@@ -1,0 +1,26 @@
+@model bids.Models.AuctionViewModel
+@{
+    ViewData["Title"] = "New Auction";
+}
+<header>
+    <h1>New Auction</h1>
+    <div class="buttonHolder">
+		<a class="btn btn-dflt right" asp-controller="bids" asp-action="logout">Logout</a>
+        <a class="btn btn-pop right" asp-controller="bids" asp-action="userdash">Home</a>
+    </div>
+</header>
+<form asp-controller="bids" asp-action="createauction" method="post">
+    @if (ViewBag.AuctionErrors != null)
+    {
+        <div class="notif eighty center" asp-validation-summary="All"></div>
+    }
+    <label class="forty" asp-for="product"></label>
+	<input class="sixty" asp-for="product">
+    <label class="forty" asp-for="start_bid"></label>
+	<input class="sixty" asp-for="start_bid">
+	<label class="forty" asp-for="description"></label>
+	<textarea class="sixty" asp-for="description" rows="5" cols="40"></textarea>
+    <label class="forty" asp-for="end_date"></label>
+	<input class="sixty" asp-for="end_date">
+	<input class="btn btn-pop" type="submit" name="submit" value="Create Auction">
+</form>

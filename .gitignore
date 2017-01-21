@@ -1,2 +1,4 @@
 project.lock.json
 DS.Store
+*.sql
+*.mwb
